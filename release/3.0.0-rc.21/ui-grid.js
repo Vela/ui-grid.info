@@ -1699,12 +1699,23 @@ angular.module('ui.grid')
       $scope.grid.options.gridMenuTitleFilter = $scope.grid.options.gridMenuTitleFilter ? $scope.grid.options.gridMenuTitleFilter : function( title ) { return title; };  
       
       $scope.grid.options.columnDefs.forEach( function( colDef, index ){
+
+
+        updateAttributeVisibility = function(colDef) {
+          if (colDef.id) {
+            colDef.updateAttributeVisibility(colDef.id, !colDef.visible);
+          } else {
+            gridUtil.logError('column id is null');
+          }
+        };
+
         if ( colDef.enableHiding !== false ){
           // add hide menu item - shows an OK icon as we only show when column is already visible
           var menuItem = {
             icon: 'ui-grid-icon-ok',
             action: function($event) {
               $event.stopPropagation();
+              updateAttributeVisibility(this.context.gridCol.colDef);
               service.toggleColumnVisibility( this.context.gridCol );
             },
             shown: function() {
@@ -1722,6 +1733,7 @@ angular.module('ui.grid')
             icon: 'ui-grid-icon-cancel',
             action: function($event) {
               $event.stopPropagation();
+              updateAttributeVisibility(this.context.gridCol.colDef);
               service.toggleColumnVisibility( this.context.gridCol );
             },
             shown: function() {
